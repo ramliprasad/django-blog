@@ -3,8 +3,30 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
 from django.db.models import Count
 
-from .forms import EmailPostForm, CommentForm
+from .forms import EmailPostForm, CommentForm, SearchForm
 from .models import Post, Comment
+
+from haystack.query import SearchQuerySet
+
+# Search option
+
+def post_search(request):
+    form = SearchForm()
+    cd,results,total_results = ('','','')
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            cd = form.cleaned_data
+            results = SearchQuerySet().models(Post)\
+                      .filter(content=cd['query']).load_all()
+            # count total results
+            total_results = results.count()
+    return render(request,
+                  'blog/post/search.html',
+                  {'form': form,
+                   'cd' : cd,
+                   'results' : results,
+                   'total_results' : total_results})
 
 # Create your views here.
 # The below code has been commented in order to use Class PostListView and can be seen from urls.py file
