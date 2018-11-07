@@ -39,7 +39,7 @@ class Post(models.Model):
     tags = TaggableManager()
 
     objects = models.Manager() # The default manager
-    #published = PublishedManager() # our custom manager
+    published = PublishedManager() # our custom manager
     draft=DraftManager()
     #draft = DraftQuerySet().as_manager()
 
